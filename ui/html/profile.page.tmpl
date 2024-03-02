@@ -1,0 +1,105 @@
+<!-- profile.page.tmpl -->
+{{define "profile"}}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Food Market - Profile</title>
+        <style>
+            /* Include the styles from your existing template */
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f5f5f5;
+            }
+
+            header {
+                background-color: #333;
+                color: #fff;
+                padding: 20px;
+                text-align: center;
+            }
+
+            nav {
+                background-color: #666;
+                color: #fff;
+                padding: 10px;
+                text-align: center;
+            }
+
+            nav a {
+                color: #fff;
+                text-decoration: none;
+                padding: 0 10px;
+            }
+
+            nav a:hover {
+                text-decoration: underline;
+            }
+
+            .container {
+                max-width: 800px;
+                margin: 20px auto;
+                padding: 0 20px;
+            }
+
+            .main-content {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+            footer {
+                background-color: #333;
+                color: #fff;
+                text-align: center;
+                padding: 10px;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+            }
+
+            /* Additional styles for the profile page */
+            .profile-image {
+                width: 150px;
+                height: 150px;
+                border-radius: 50%;
+                margin: 20px auto;
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+    <header>
+        <h1>Welcome to Food Market</h1>
+    </header>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/products">Products</a>
+        <a href="/about-us">About Us</a>
+        <a href="/contacts">Contact</a>
+        <a href="/profile">Profile</a>
+    </nav>
+    <div class="container">
+        {{if .User}}
+            <div class="main-content">
+                <h2>User Profile</h2>
+                <!-- Add your profile content here -->
+                <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fkartinki.pics%2F78152-chetkie-kartinki-na-avu.html&psig=AOvVaw2FX_M7MYbJaqXxVC6BYFFm&ust=1709417794024000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCLCf6NSL1IQDFQAAAAAdAAAAABAE"
+                     alt="Profile Picture" class="profile-image">
+                <p>Full name: {{.User.Name}}</p>
+                <p>Email: {{.User.Email}}</p>
+                <p>Role: {{.User.Role}}</p>
+                <!-- Add more profile details as needed -->
+            </div>
+        {{else}}
+            <h1>you are not authenticated</h1>
+        {{end}}
+    </div>
+    {{template "footer" .}}
+    </body>
+    </html>
+{{end}}
