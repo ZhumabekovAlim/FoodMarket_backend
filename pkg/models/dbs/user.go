@@ -13,18 +13,18 @@ type UserModel struct {
 	DB *sql.DB
 }
 
-func (m *UserModel) Insert(name, email, password string) error {
+func (m *UserModel) Insert(name, email, phone, password string) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	if err != nil {
 		return err
 	}
 
-	stmt := `INSERT INTO users (id, name, email, phone, password) VALUES ($1, $2, $3, $4, $5);`
+	stmt := `INSERT INTO users (name, email, phone, password, role) VALUES ($1, $2, $3, $4, $5);`
 
-	_, err = m.DB.Exec(stmt, name, email, string(hashedPassword), "user")
+	_, err = m.DB.Exec(stmt, name, email, phone, string(hashedPassword), "USER")
 	if err != nil {
 		var pgErr *pq.Error
-		if errors.As(err, &pgErr) && pgErr.Code == "23505" && strings.Contains(pgErr.Message, "users_uc_email") {
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" && strings.Contains(pgErr.Message, "unique_email") {
 			return models.ErrDuplicateEmail
 		}
 		return err
@@ -33,7 +33,7 @@ func (m *UserModel) Insert(name, email, password string) error {
 	return nil
 }
 
-func (m *UserModel) GetAll() ([]*models.User, error) {
+func (m *UserModel) GetAllUsers() ([]*models.User, error) {
 	stmt := `SELECT * FROM food_market.public.users`
 
 	rows, err := m.DB.Query(stmt)
@@ -41,7 +41,7 @@ func (m *UserModel) GetAll() ([]*models.User, error) {
 		return nil, err
 	}
 
-	users := []*models.User{}
+	var users []*models.User
 
 	for rows.Next() {
 		user := &models.User{}
@@ -60,7 +60,7 @@ func (m *UserModel) GetAll() ([]*models.User, error) {
 	return users, nil
 }
 
-func (m *UserModel) GetRole(id int) string {
+func (m *UserModel) GetUserRoleById(id int) string {
 	stmt := `SELECT role FROM food_market.public.users WHERE id = $1`
 	var role string
 	err := m.DB.QueryRow(stmt, id).Scan(&role)
@@ -71,7 +71,7 @@ func (m *UserModel) GetRole(id int) string {
 	return role
 }
 
-func (m *UserModel) Get(id int) (*models.User, error) {
+func (m *UserModel) GetUserById(id int) (*models.User, error) {
 	stmt := `SELECT * FROM food_market.public.users WHERE id = $1`
 
 	userRow := m.DB.QueryRow(stmt, id)
@@ -88,4 +88,31 @@ func (m *UserModel) Get(id int) (*models.User, error) {
 	}
 
 	return u, nil
+}
+
+func (m *UserModel) Authenticate(email, password string) (int, error) {
+
+	var id int
+	var hashedPassword []byte
+	stmt := "SELECT id, password FROM food_market.public.users WHERE email = $1"
+	row := m.DB.QueryRow(stmt, email)
+	err := row.Scan(&id, &hashedPassword)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, models.ErrInvalidCredentials
+		} else {
+			return 0, err
+		}
+	}
+
+	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
+	if err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			return 0, models.ErrInvalidCredentials
+		} else {
+			return 0, err
+		}
+	}
+	// Otherwise, the password is correct. Return the user ID.
+	return id, nil
 }

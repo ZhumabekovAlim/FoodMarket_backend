@@ -37,6 +37,7 @@ type Category struct {
 
 type OrderHistory struct {
 	ID        uint16
+	OrderId   uint16    `json:"orderId"`
 	ProductId uint16    `json:"productId"`
 	UserId    uint16    `json:"userId"`
 	Quantity  uint16    `json:"quantity"`

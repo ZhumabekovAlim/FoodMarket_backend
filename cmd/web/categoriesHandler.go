@@ -31,6 +31,17 @@ func (app *application) createCategory(w http.ResponseWriter, r *http.Request) {
 	w.Write(createdCategory)
 }
 
+func (app *application) categories(w http.ResponseWriter, r *http.Request) {
+	categories, err := app.category.GetAllCategories()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+
+	w.Write(categories)
+}
+
 func (app *application) updateCategory(w http.ResponseWriter, r *http.Request) {
 	var updatedCategory models.Category
 

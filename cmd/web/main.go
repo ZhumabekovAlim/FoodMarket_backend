@@ -21,12 +21,14 @@ type application struct {
 	user          *dbs.UserModel
 	product       *dbs.ProductModel
 	category      *dbs.CategoryModel
+	history       *dbs.OrderHistoryModel
 }
 
 //var users []User
 //var user = User{}
 
 func main() {
+	//dsn := "user=food_market_d8v1_user password=0p5Y4mvLHVfJLUCJAGHeUSaa8sAIp5aL dbname=food_market_d8v1 sslmode=disable host=dpg-cnhkrhed3nmc739f2r30-a port=5432"
 	dsn := "user=postgres password=Alimoka040102 dbname=food_market sslmode=disable host=localhost port=5432"
 	addr := flag.String("addr", ":4001", "HTTP network address")
 
@@ -50,7 +52,6 @@ func main() {
 
 	session := sessions.New([]byte(*secret))
 	session.Lifetime = 12 * time.Hour
-	session.Secure = true
 
 	app := &application{
 		errorLog:      errorLog,
@@ -60,6 +61,7 @@ func main() {
 		user:          &dbs.UserModel{DB: db},
 		product:       &dbs.ProductModel{DB: db},
 		category:      &dbs.CategoryModel{DB: db},
+		history:       &dbs.OrderHistoryModel{DB: db},
 	}
 
 	srv := &http.Server{

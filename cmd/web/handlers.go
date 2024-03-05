@@ -20,7 +20,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//id := app.session.Get(r, "authenticatedUserID").(int)
-	//user, _ := app.user.Get(id)c
+	//id := app.session.GetUserById(r, "authenticatedUserID").(int)
+	//user, _ := app.user.GetUserById(id)c
 	w.Write(products)
 }

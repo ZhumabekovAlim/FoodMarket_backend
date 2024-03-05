@@ -5,7 +5,7 @@ package main
 //
 //	r.Body = io.NopCloser(bytes.NewBuffer(body))
 //
-//	id, err := app.user.Authenticate(form.Get("email"), form.Get("password"))
+//	id, err := app.user.Authenticate(form.GetUserById("email"), form.GetUserById("password"))
 //	if err != nil {
 //		if errors.Is(err, models.ErrInvalidCredentials) {
 //			form.Errors.Add("generic", "Email or Password is incorrect")

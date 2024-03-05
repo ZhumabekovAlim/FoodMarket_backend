@@ -30,7 +30,7 @@ func (app *application) isAuthenticated(r *http.Request) bool {
 func (app *application) whoIsThis(r *http.Request) string {
 	if app.session.Exists(r, "authenticatedUserID") {
 		currentId := app.session.Get(r, "authenticatedUserID").(int)
-		return app.user.GetRole(currentId) // todo create users model
+		return app.user.GetUserRoleById(currentId) // todo create users model
 		// todo
 	}
 	return "guest"
