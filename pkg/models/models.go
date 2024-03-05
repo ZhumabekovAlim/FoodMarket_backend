@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"time"
 )
 
 var (
@@ -12,7 +11,7 @@ var (
 )
 
 type User struct {
-	ID       uint16
+	ID       string
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Phone    string `json:"phone"`
@@ -21,25 +20,26 @@ type User struct {
 }
 
 type Product struct {
-	ID          uint16
+	ID          string
 	ProductName string `json:"productName"`
-	CategoryId  uint16 `json:"categoryId"`
-	Price       uint16 `json:"price"`
-	Quantity    uint16 `json:"quantity"`
+	CategoryId  string `json:"categoryId"`
+	Price       string `json:"price"`
+	Quantity    string `json:"quantity"`
 	Type        string `json:"type"`
 	PhotoUrl    string `json:"photoUrl"`
 }
 
 type Category struct {
-	ID           int
+	ID           string
 	CategoryName string `json:"categoryName"`
 }
 
-type OrderHistory struct {
-	ID uint16
-	//OrderId   uint16    `json:"orderId"`
-	ProductId uint16    `json:"productId"`
-	UserId    uint16    `json:"userId"`
-	Quantity  uint16    `json:"quantity"`
-	DateTime  time.Time `json:"dateTime"`
-}
+//
+//type OrderHistory struct {
+//	ID uint16
+//	//OrderId   uint16    `json:"orderId"`
+//	ProductId uint16    `json:"productId"`
+//	UserId    uint16    `json:"userId"`
+//	Quantity  uint16    `json:"quantity"`
+//	DateTime  time.Time `json:"dateTime"`
+//}

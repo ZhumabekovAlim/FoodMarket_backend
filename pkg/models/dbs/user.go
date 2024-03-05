@@ -97,7 +97,6 @@ func (m *UserModel) GetUserById(id string) ([]byte, error) {
 }
 
 func (m *UserModel) Authenticate(email, password string) (int, error) {
-
 	var id int
 	var hashedPassword []byte
 	stmt := "SELECT id, password FROM customer WHERE email = $1"

@@ -26,7 +26,6 @@ func (app *application) createProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	w.Write(createdProduct)
 }
@@ -37,7 +36,6 @@ func (app *application) products(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
 	w.Write(products)
 }
 
@@ -50,7 +48,6 @@ func (app *application) productsById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(productResponse)
 }

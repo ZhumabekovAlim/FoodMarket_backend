@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"food_market/pkg/models"
+	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
@@ -55,10 +57,39 @@ func (app *application) loginUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	responseUser, err := app.user.GetUserById(strconv.Itoa(userId))
+	if app.session.Exists(r, "authenticatedUserID") {
+		w.WriteHeader(http.StatusOK)
+		_, err := w.Write(responseUser)
+		if err != nil {
+			return
+		}
+		return
+	}
 	app.session.Put(r, "authenticatedUserID", userId)
-	convertedUser, err := json.Marshal(user)
 	if err != nil {
 		return
 	}
-	w.Write(convertedUser)
+	_, err = w.Write(responseUser)
+	if err != nil {
+		return
+	}
+}
+
+func (app *application) logOut(w http.ResponseWriter, r *http.Request) {
+	if !app.session.Exists(r, "authenticatedUserID") {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	app.session.Pop(r, "authenticatedUserID")
+	w.WriteHeader(http.StatusOK)
+}
+
+func (app *application) testGin(c *gin.Context) {
+	user, err := app.user.GetUserById("1")
+	if err != nil {
+		app.clientError(c.Writer, http.StatusOK)
+	}
+	c.JSON(http.StatusOK, user)
 }

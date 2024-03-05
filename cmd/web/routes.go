@@ -7,7 +7,7 @@ import (
 )
 
 func (app *application) routes() http.Handler {
-	standardMiddleware := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
+	standardMiddleware := alice.New(app.recoverPanic, app.logRequest, secureHeaders, makeResponseJSON)
 
 	dynamicMiddleware := alice.New(app.session.Enable)
 
@@ -19,7 +19,13 @@ func (app *application) routes() http.Handler {
 	// AUTH
 	mux.Post("/signup", dynamicMiddleware.ThenFunc(app.signupUser))
 	mux.Post("/login", dynamicMiddleware.ThenFunc(app.loginUser))
-	mux.Post("/logout", dynamicMiddleware.ThenFunc(app.loginUser))
+	mux.Post("/logout", dynamicMiddleware.ThenFunc(app.logOut))
+
+	// USER
+	mux.Patch("/admin", dynamicMiddleware.ThenFunc(app.updateUser))
+
+	// ADMIN
+	mux.Get("/admin/users", dynamicMiddleware.ThenFunc(app.getAllUsers))
 
 	// USER PROFILE
 	mux.Get("/profile/:id", dynamicMiddleware.ThenFunc(app.profile))
@@ -28,7 +34,7 @@ func (app *application) routes() http.Handler {
 	mux.Post("/create-product", dynamicMiddleware.ThenFunc(app.createProduct))
 	mux.Get("/products", dynamicMiddleware.ThenFunc(app.products))
 	mux.Get("/product/:id", dynamicMiddleware.ThenFunc(app.productsById))
-	mux.Patch("/update_product", dynamicMiddleware.ThenFunc(app.updateProduct))
+	mux.Patch("/update-product", dynamicMiddleware.ThenFunc(app.updateProduct))
 	mux.Del("/delete-product", dynamicMiddleware.ThenFunc(app.deleteProduct))
 
 	// CATEGORY

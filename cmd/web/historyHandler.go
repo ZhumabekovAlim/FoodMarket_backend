@@ -27,7 +27,6 @@ package main
 //		return
 //	}
 //
-//	w.Header().Set("Content-Type", "application/json")
 //	w.WriteHeader(http.StatusCreated)
 //	w.Write(createdHistory)
 //}
@@ -48,7 +47,6 @@ package main
 //		app.serverError(w, err)
 //		return
 //	}
-//	w.Header().Set("Content-Type", "application/json")
 //
 //	w.Write(histories)
 //}
@@ -59,7 +57,6 @@ package main
 //		app.serverError(w, err)
 //		return
 //	}
-//	w.Header().Set("Content-Type", "application/json")
 //
 //	w.Write(histories)
 //}
@@ -72,7 +69,6 @@ package main
 //		app.serverError(w, err)
 //		return
 //	}
-//	w.Header().Set("Content-Type", "application/json")
 //
 //	w.Write(history)
 //}
