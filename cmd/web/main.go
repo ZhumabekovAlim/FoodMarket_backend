@@ -6,6 +6,7 @@ import (
 	"food_market/pkg/models/dbs"
 	"github.com/golangcollege/sessions"
 	_ "github.com/lib/pq"
+	"github.com/rs/cors"
 	"html/template"
 	"log"
 	"net/http"
@@ -26,12 +27,18 @@ type application struct {
 
 func main() {
 	//dsn := "user=food_market_d8v1_user password=0p5Y4mvLHVfJLUCJAGHeUSaa8sAIp5aL dbname=food_market_d8v1 sslmode=disable host=dpg-cnhkrhed3nmc739f2r30-a port=5432"
-	dsn := "user=bxit password=aa dbname=bxit sslmode=disable host=localhost port=5433"
+	dsn := "user=postgres password=1 dbname=postgres sslmode=disable host=localhost port=5432"
 	addr := flag.String("addr", ":4001", "HTTP network address")
 
 	secret := flag.String("secret", "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret key")
 
 	flag.Parse()
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"}, // Allowed domains
+		AllowedMethods:   []string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowCredentials: true,
+	})
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
@@ -64,7 +71,7 @@ func main() {
 	srv := &http.Server{
 		Addr:     *addr,
 		ErrorLog: errorLog,
-		Handler:  app.routes(),
+		Handler:  c.Handler(app.routes()),
 		// TLSConfig:    tlsConfig,
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  5 * time.Second,
