@@ -2,6 +2,7 @@ package dbs
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"food_market/pkg/models"
 	"github.com/lib/pq"
@@ -19,12 +20,12 @@ func (m *UserModel) Insert(name, email, phone, password string) error {
 		return err
 	}
 
-	stmt := `INSERT INTO users (name, email, phone, password, role) VALUES ($1, $2, $3, $4, $5);`
+	stmt := `INSERT INTO customer (name, email, phone, password, role) VALUES ($1, $2, $3, $4, $5);`
 
 	_, err = m.DB.Exec(stmt, name, email, phone, string(hashedPassword), "USER")
 	if err != nil {
 		var pgErr *pq.Error
-		if errors.As(err, &pgErr) && pgErr.Code == "23505" && strings.Contains(pgErr.Message, "unique_email") {
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" && strings.Contains(pgErr.Message, "users_uc_email") {
 			return models.ErrDuplicateEmail
 		}
 		return err
@@ -33,8 +34,8 @@ func (m *UserModel) Insert(name, email, phone, password string) error {
 	return nil
 }
 
-func (m *UserModel) GetAllUsers() ([]*models.User, error) {
-	stmt := `SELECT * FROM food_market.public.users`
+func (m *UserModel) GetAllUsers() ([]byte, error) {
+	stmt := `SELECT * FROM customer`
 
 	rows, err := m.DB.Query(stmt)
 	if err != nil {
@@ -57,11 +58,12 @@ func (m *UserModel) GetAllUsers() ([]*models.User, error) {
 		return nil, err
 	}
 
-	return users, nil
+	convertedAllUser, err := json.Marshal(users)
+	return convertedAllUser, nil
 }
 
 func (m *UserModel) GetUserRoleById(id int) string {
-	stmt := `SELECT role FROM food_market.public.users WHERE id = $1`
+	stmt := `SELECT role FROM customer WHERE id = $1`
 	var role string
 	err := m.DB.QueryRow(stmt, id).Scan(&role)
 	if err != nil {
@@ -71,8 +73,8 @@ func (m *UserModel) GetUserRoleById(id int) string {
 	return role
 }
 
-func (m *UserModel) GetUserById(id int) (*models.User, error) {
-	stmt := `SELECT * FROM food_market.public.users WHERE id = $1`
+func (m *UserModel) GetUserById(id string) ([]byte, error) {
+	stmt := `SELECT * FROM customer WHERE id = $1`
 
 	userRow := m.DB.QueryRow(stmt, id)
 
@@ -87,14 +89,18 @@ func (m *UserModel) GetUserById(id int) (*models.User, error) {
 		}
 	}
 
-	return u, nil
+	convertedUser, err := json.Marshal(u)
+	if err != nil {
+		return nil, err
+	}
+	return convertedUser, nil
 }
 
 func (m *UserModel) Authenticate(email, password string) (int, error) {
 
 	var id int
 	var hashedPassword []byte
-	stmt := "SELECT id, password FROM food_market.public.users WHERE email = $1"
+	stmt := "SELECT id, password FROM customer WHERE email = $1"
 	row := m.DB.QueryRow(stmt, email)
 	err := row.Scan(&id, &hashedPassword)
 	if err != nil {
@@ -113,6 +119,5 @@ func (m *UserModel) Authenticate(email, password string) (int, error) {
 			return 0, err
 		}
 	}
-	// Otherwise, the password is correct. Return the user ID.
 	return id, nil
 }

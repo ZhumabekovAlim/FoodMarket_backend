@@ -29,10 +29,10 @@ func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.session.Put(r, "flash", "Your signup was successful. Please log in.")
-	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+	w.WriteHeader(http.StatusCreated) // 201
 }
 
-func (app *application) loginUser(w http.ResponseWriter, r *http.Request) (*application, error) {
+func (app *application) loginUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 
 	body, _ := io.ReadAll(r.Body)
@@ -42,43 +42,23 @@ func (app *application) loginUser(w http.ResponseWriter, r *http.Request) (*appl
 
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
-		//return sessions.Session{}, user, err
+		return
 	}
 
-	//id, err := app.user.Authenticate(form.GetUserById("email"), form.GetUserById("password"))
-	id, err := app.user.Authenticate(user.Email, user.Password)
+	userId, err := app.user.Authenticate(user.Email, user.Password)
 	if err != nil {
 		if errors.Is(err, models.ErrInvalidCredentials) {
 			app.clientError(w, http.StatusBadRequest)
-			//return sessions.Session{}, user, err
-			return &application{
-				session: nil,
-			}, err
+			return
 		} else {
 			app.serverError(w, err)
-		}
-		//return sessions.Session{}, user, err
-	}
-	app.session.Put(r, "authenticatedUserID", id)
-	// Redirect the user to the create snippet page.
-	//http.Redirect(w, r, "/", http.StatusSeeOther)
-
-	//return app.session, user, nil
-	return &application{
-			session: app.session,
-			user:    app.user,
-		},
-		nil
-}
-
-func loginUserHandler(app *application) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// Внутри этой функции вы вызываете метод loginUser вашей структуры app.
-		result, err := app.loginUser(w, r)
-		// Обработка результата и ошибок...
-		if err != nil {
 			return
 		}
-		_ = result
 	}
+	app.session.Put(r, "authenticatedUserID", userId)
+	convertedUser, err := json.Marshal(user)
+	if err != nil {
+		return
+	}
+	w.Write(convertedUser)
 }

@@ -10,6 +10,23 @@ type ProductModel struct {
 	DB *sql.DB
 }
 
+// create
+func (m *ProductModel) CreateProduct(Product *models.Product) ([]byte, error) {
+	stmt := `INSERT INTO product (product_name, category_id, price, quantity, type, photo_url) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`
+
+	err := m.DB.QueryRow(stmt, Product.ProductName, Product.CategoryId, Product.Price, Product.Quantity, Product.Type, Product.PhotoUrl).Scan(&Product.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	convertedProduct, err := json.Marshal(Product)
+	if err != nil {
+		return nil, err
+	}
+
+	return convertedProduct, nil
+}
+
 // show
 func (m *ProductModel) GetAllProducts() ([]byte, error) {
 	stmt := `SELECT * FROM product`
@@ -49,16 +66,30 @@ func (m *ProductModel) GetAllProducts() ([]byte, error) {
 	return convertedProduct, nil
 }
 
-// create
-func (m *ProductModel) CreateProduct(Product *models.Product) ([]byte, error) {
-	stmt := `INSERT INTO product (product_name, category_id, price, quantity, type, photo_url) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`
+func (m *ProductModel) GetProductById(productId string) ([]byte, error) {
+	stmt := `SELECT * FROM product WHERE id = $1`
 
-	err := m.DB.QueryRow(stmt, Product.ProductName, Product.CategoryId, Product.Price, Product.Quantity, Product.Type, Product.PhotoUrl).Scan(&Product.ID)
+	row := m.DB.QueryRow(stmt, productId)
+
+	p := &models.Product{}
+	err := row.Scan(
+		&p.ID,
+		&p.ProductName,
+		&p.CategoryId,
+		&p.Price,
+		&p.Quantity,
+		&p.Type,
+		&p.PhotoUrl,
+	)
 	if err != nil {
 		return nil, err
 	}
 
-	convertedProduct, err := json.Marshal(Product)
+	if err = row.Err(); err != nil {
+		return nil, err
+	}
+
+	convertedProduct, err := json.Marshal(p)
 	if err != nil {
 		return nil, err
 	}
@@ -78,11 +109,16 @@ func (m *ProductModel) UpdateProduct(product *models.Product) error {
 			type = $6,
 			photo_url = $7
 		WHERE
-			id = $1
-	`
+			id = $1`
 
 	_, err := m.DB.Exec(stmt, product.ID, product.ProductName, product.CategoryId, product.Price, product.Quantity, product.Type, product.PhotoUrl)
-	return err
+	if err != nil {
+		return err
+	}
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // delete

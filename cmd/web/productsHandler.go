@@ -38,8 +38,21 @@ func (app *application) products(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-
 	w.Write(products)
+}
+
+func (app *application) productsById(w http.ResponseWriter, r *http.Request) {
+	productId := r.URL.Query().Get(":id")
+
+	productResponse, err := app.product.GetProductById(productId)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(productResponse)
 }
 
 func (app *application) updateProduct(w http.ResponseWriter, r *http.Request) {
@@ -57,6 +70,7 @@ func (app *application) updateProduct(w http.ResponseWriter, r *http.Request) {
 	err = app.product.UpdateProduct(&updatedProduct)
 	if err != nil {
 		app.serverError(w, err)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 

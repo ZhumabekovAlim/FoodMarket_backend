@@ -39,7 +39,22 @@ func (app *application) categories(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 
+	w.WriteHeader(http.StatusOK)
 	w.Write(categories)
+}
+
+func (app *application) categoryById(w http.ResponseWriter, r *http.Request) {
+	categoryId := r.URL.Query().Get(":id")
+
+	categoryResponse, err := app.category.GetCategoryById(categoryId)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(categoryResponse)
 }
 
 func (app *application) updateCategory(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +74,7 @@ func (app *application) updateCategory(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -80,5 +95,5 @@ func (app *application) deleteCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusOK)
 }
