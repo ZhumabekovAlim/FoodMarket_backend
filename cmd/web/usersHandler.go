@@ -33,24 +33,25 @@ func (app *application) profile(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) updateUser(w http.ResponseWriter, r *http.Request) {
 	var updatedUser models.User
-	userId := r.URL.Query().Get(":id")
+	userId, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	println(userId)
 
 	body, _ := io.ReadAll(r.Body)
 	r.Body = io.NopCloser(bytes.NewBuffer(body))
 
-	err := json.NewDecoder(r.Body).Decode(&updatedUser)
+	err = json.NewDecoder(r.Body).Decode(&updatedUser)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	user, err := app.user.GetUserById(userId)
+	err = app.user.UpdateUser(&updatedUser, userId)
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	w.Write(user)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (app *application) deleteUser(w http.ResponseWriter, r *http.Request) {
