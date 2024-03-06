@@ -22,7 +22,7 @@ func (app *application) routes() http.Handler {
 	mux.Post("/logout", dynamicMiddleware.ThenFunc(app.logOut))
 
 	// USER
-	mux.Put("/admin/:id", dynamicMiddleware.ThenFunc(app.updateUser))
+	mux.Patch("/admin/:id", dynamicMiddleware.ThenFunc(app.updateUser))
 	mux.Del("/user/delete/:id", dynamicMiddleware.ThenFunc(app.deleteUser))
 
 	// ADMIN

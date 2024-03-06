@@ -11,6 +11,16 @@ import (
 
 func (app *application) profile(w http.ResponseWriter, r *http.Request) {
 	userId := r.URL.Query().Get(":id")
+	if !app.session.Exists(r, "authenticatedUserID") {
+		app.clientError(w, http.StatusUnauthorized)
+		return
+	}
+	authorizedId := app.session.GetInt(r, "authenticatedUserID")
+	userIdToCompare, err := strconv.Atoi(userId)
+	if authorizedId != userIdToCompare {
+		app.clientError(w, http.StatusForbidden)
+		return
+	}
 
 	user, err := app.user.GetUserById(userId)
 	if err != nil {

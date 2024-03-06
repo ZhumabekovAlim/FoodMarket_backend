@@ -30,7 +30,6 @@ func (app *application) signupUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.session.Put(r, "flash", "Your signup was successful. Please log in.")
 	w.WriteHeader(http.StatusCreated) // 201
 }
 
