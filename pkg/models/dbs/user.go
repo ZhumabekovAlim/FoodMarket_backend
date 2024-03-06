@@ -121,6 +121,25 @@ func (m *UserModel) Authenticate(email, password string) (int, error) {
 	return id, nil
 }
 
+func (m *UserModel) UpdateUser(user *models.User, id int) error {
+	stmt := `
+    UPDATE customer
+    SET
+      name = $2,
+      email = $3,
+      phone = $4,
+      role = $5
+    WHERE
+      id = $1`
+
+	_, err := m.DB.Exec(stmt, id, user.Name, user.Email, user.Phone, user.Role)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *UserModel) DeleteUserById(id int) {
 	stmt := `DELETE FROM customer WHERE id = $1`
 	_, err := m.DB.Exec(stmt, id)
