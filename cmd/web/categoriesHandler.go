@@ -6,6 +6,7 @@ import (
 	"food_market/pkg/models"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func (app *application) createCategory(w http.ResponseWriter, r *http.Request) {
@@ -57,17 +58,22 @@ func (app *application) categoryById(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) updateCategory(w http.ResponseWriter, r *http.Request) {
 	var updatedCategory models.Category
+	categoryId, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	if err != nil || categoryId < 0 {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
 
 	body, _ := io.ReadAll(r.Body)
 	r.Body = io.NopCloser(bytes.NewBuffer(body))
 	println(r)
-	err := json.NewDecoder(r.Body).Decode(&updatedCategory)
+	err = json.NewDecoder(r.Body).Decode(&updatedCategory)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
 	}
 
-	err = app.category.UpdateCategory(&updatedCategory)
+	err = app.category.UpdateCategory(&updatedCategory, categoryId)
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -76,17 +82,14 @@ func (app *application) updateCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) deleteCategory(w http.ResponseWriter, r *http.Request) {
-	var requestParams struct {
-		ID int `json:"id"`
-	}
 
-	err := json.NewDecoder(r.Body).Decode(&requestParams)
-	if err != nil || requestParams.ID == 0 {
+	categoryId, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	if err != nil || categoryId == 0 {
 		app.clientError(w, http.StatusBadRequest)
 		return
 	}
 
-	err = app.category.DeleteCategory(requestParams.ID)
+	err = app.category.DeleteCategory(categoryId)
 	if err != nil {
 		app.serverError(w, err)
 		return

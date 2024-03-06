@@ -35,15 +35,15 @@ func (app *application) routes() http.Handler {
 	mux.Post("/create-product", dynamicMiddleware.ThenFunc(app.createProduct))
 	mux.Get("/products", dynamicMiddleware.ThenFunc(app.products))
 	mux.Get("/product/:id", dynamicMiddleware.ThenFunc(app.productsById))
-	mux.Put("/update-product", dynamicMiddleware.ThenFunc(app.updateProduct))
-	mux.Del("/delete-product", dynamicMiddleware.ThenFunc(app.deleteProduct))
+	mux.Patch("/update-product/:id", dynamicMiddleware.ThenFunc(app.updateProduct))
+	mux.Del("/delete-product/:id", dynamicMiddleware.ThenFunc(app.deleteProduct))
 
 	// CATEGORY
 	mux.Post("/create-category", dynamicMiddleware.ThenFunc(app.createCategory))
 	mux.Get("/categories", dynamicMiddleware.ThenFunc(app.categories))
 	mux.Get("/category/:id", dynamicMiddleware.ThenFunc(app.categoryById))
-	mux.Patch("/update-category", dynamicMiddleware.ThenFunc(app.updateCategory))
-	mux.Del("/delete-category", dynamicMiddleware.ThenFunc(app.deleteCategory))
+	mux.Patch("/update-category/:id", dynamicMiddleware.ThenFunc(app.updateCategory))
+	mux.Del("/delete-category/:id", dynamicMiddleware.ThenFunc(app.deleteCategory))
 
 	//mux.Get("/histories", dynamicMiddleware.ThenFunc(app.histories))
 	//mux.Get("/history/:id", dynamicMiddleware.ThenFunc(app.historyById))

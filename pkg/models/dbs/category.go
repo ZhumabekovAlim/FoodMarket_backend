@@ -83,7 +83,7 @@ func (m *CategoryModel) CreateCategory(category *models.Category) ([]byte, error
 }
 
 // update
-func (m *CategoryModel) UpdateCategory(category *models.Category) error {
+func (m *CategoryModel) UpdateCategory(category *models.Category, categoryId int) error {
 	stmt := `
 		UPDATE category
 		SET
@@ -92,14 +92,13 @@ func (m *CategoryModel) UpdateCategory(category *models.Category) error {
 			id = $1
 			`
 
-	_, err := m.DB.Exec(stmt, category.ID, category.CategoryName)
+	_, err := m.DB.Exec(stmt, categoryId, category.CategoryName)
 	return err
 }
 
 // delete
 func (m *CategoryModel) DeleteCategory(categoryID int) error {
 	stmt := `DELETE FROM category WHERE id = $1`
-
 	_, err := m.DB.Exec(stmt, categoryID)
 	return err
 }

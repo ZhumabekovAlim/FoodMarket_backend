@@ -98,7 +98,7 @@ func (m *ProductModel) GetProductById(productId string) ([]byte, error) {
 }
 
 // update
-func (m *ProductModel) UpdateProduct(product *models.Product) error {
+func (m *ProductModel) UpdateProduct(product *models.Product, productId int) error {
 	stmt := `
 		UPDATE product
 		SET
@@ -111,10 +111,7 @@ func (m *ProductModel) UpdateProduct(product *models.Product) error {
 		WHERE
 			id = $1`
 
-	_, err := m.DB.Exec(stmt, product.ID, product.ProductName, product.CategoryId, product.Price, product.Quantity, product.Type, product.PhotoUrl)
-	if err != nil {
-		return err
-	}
+	_, err := m.DB.Exec(stmt, productId, product.ProductName, product.CategoryId, product.Price, product.Quantity, product.Type, product.PhotoUrl)
 	if err != nil {
 		return err
 	}

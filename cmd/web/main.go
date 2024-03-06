@@ -27,7 +27,7 @@ type application struct {
 
 func main() {
 	//dsn := "user=food_market_d8v1_user password=0p5Y4mvLHVfJLUCJAGHeUSaa8sAIp5aL dbname=food_market_d8v1 sslmode=disable host=dpg-cnhkrhed3nmc739f2r30-a port=5432"
-	dsn := "user=postgres password=1 dbname=postgres sslmode=disable host=localhost port=5432"
+	dsn := "user=bxit password=aa dbname=bxit sslmode=disable host=localhost port=5433"
 	addr := flag.String("addr", ":4001", "HTTP network address")
 
 	secret := flag.String("secret", "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "Secret key")

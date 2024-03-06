@@ -6,6 +6,7 @@ import (
 	"food_market/pkg/models"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func (app *application) createProduct(w http.ResponseWriter, r *http.Request) {
@@ -54,17 +55,21 @@ func (app *application) productsById(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) updateProduct(w http.ResponseWriter, r *http.Request) {
 	var updatedProduct models.Product
+	productId, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	if err != nil || productId < 0 {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
 
 	body, _ := io.ReadAll(r.Body)
 	r.Body = io.NopCloser(bytes.NewBuffer(body))
-	println(r.Body.Read([]byte("productName")))
-	err := json.NewDecoder(r.Body).Decode(&updatedProduct)
+	err = json.NewDecoder(r.Body).Decode(&updatedProduct)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
 		return
 	}
 
-	err = app.product.UpdateProduct(&updatedProduct)
+	err = app.product.UpdateProduct(&updatedProduct, productId)
 	if err != nil {
 		app.serverError(w, err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -75,17 +80,13 @@ func (app *application) updateProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) deleteProduct(w http.ResponseWriter, r *http.Request) {
-	var requestParams struct {
-		ID int `json:"id"`
-	}
-
-	err := json.NewDecoder(r.Body).Decode(&requestParams)
-	if err != nil || requestParams.ID == 0 {
+	productId, err := strconv.Atoi(r.URL.Query().Get(":id"))
+	if err != nil || productId < 0 {
 		app.clientError(w, http.StatusBadRequest)
 		return
 	}
 
-	err = app.product.DeleteProduct(requestParams.ID)
+	err = app.product.DeleteProduct(productId)
 	if err != nil {
 		app.serverError(w, err)
 		return
