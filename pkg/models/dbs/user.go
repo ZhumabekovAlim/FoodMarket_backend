@@ -46,7 +46,7 @@ func (m *UserModel) GetAllUsers() ([]byte, error) {
 
 	for rows.Next() {
 		user := &models.User{}
-		err = rows.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Role)
+		err = rows.Scan(&user.ID, &user.Name, &user.Email, &user.Phone, &user.Password, &user.Role)
 		if err != nil {
 			return nil, err
 		}
@@ -119,4 +119,12 @@ func (m *UserModel) Authenticate(email, password string) (int, error) {
 		}
 	}
 	return id, nil
+}
+
+func (m *UserModel) DeleteUserById(id int) {
+	stmt := `DELETE FROM customer WHERE id = $1`
+	_, err := m.DB.Exec(stmt, id)
+	if err != nil {
+		return
+	}
 }

@@ -57,7 +57,7 @@ func (app *application) updateProduct(w http.ResponseWriter, r *http.Request) {
 
 	body, _ := io.ReadAll(r.Body)
 	r.Body = io.NopCloser(bytes.NewBuffer(body))
-	println(r)
+	println(r.Body.Read([]byte("productName")))
 	err := json.NewDecoder(r.Body).Decode(&updatedProduct)
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)

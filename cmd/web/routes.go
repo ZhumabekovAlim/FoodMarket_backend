@@ -22,7 +22,8 @@ func (app *application) routes() http.Handler {
 	mux.Post("/logout", dynamicMiddleware.ThenFunc(app.logOut))
 
 	// USER
-	mux.Patch("/admin", dynamicMiddleware.ThenFunc(app.updateUser))
+	mux.Put("/admin/:id", dynamicMiddleware.ThenFunc(app.updateUser))
+	mux.Del("/user/delete/:id", dynamicMiddleware.ThenFunc(app.deleteUser))
 
 	// ADMIN
 	mux.Get("/admin/users", dynamicMiddleware.ThenFunc(app.getAllUsers))
@@ -34,7 +35,7 @@ func (app *application) routes() http.Handler {
 	mux.Post("/create-product", dynamicMiddleware.ThenFunc(app.createProduct))
 	mux.Get("/products", dynamicMiddleware.ThenFunc(app.products))
 	mux.Get("/product/:id", dynamicMiddleware.ThenFunc(app.productsById))
-	mux.Patch("/update-product", dynamicMiddleware.ThenFunc(app.updateProduct))
+	mux.Put("/update-product", dynamicMiddleware.ThenFunc(app.updateProduct))
 	mux.Del("/delete-product", dynamicMiddleware.ThenFunc(app.deleteProduct))
 
 	// CATEGORY

@@ -6,6 +6,7 @@ import (
 	"food_market/pkg/models"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func (app *application) profile(w http.ResponseWriter, r *http.Request) {
@@ -40,4 +41,15 @@ func (app *application) updateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(user)
+}
+
+func (app *application) deleteUser(w http.ResponseWriter, r *http.Request) {
+	userId := r.URL.Query().Get(":id")
+	id, err := strconv.Atoi(userId)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+	app.user.DeleteUserById(id)
+	w.WriteHeader(http.StatusNoContent)
 }

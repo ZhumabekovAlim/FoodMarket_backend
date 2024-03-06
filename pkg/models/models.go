@@ -11,7 +11,7 @@ var (
 )
 
 type User struct {
-	ID       string
+	ID       string `json:"userId"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Phone    string `json:"phone"`
@@ -20,7 +20,7 @@ type User struct {
 }
 
 type Product struct {
-	ID          string
+	ID          string `json:"productId"`
 	ProductName string `json:"productName"`
 	CategoryId  string `json:"categoryId"`
 	Price       string `json:"price"`
@@ -30,7 +30,7 @@ type Product struct {
 }
 
 type Category struct {
-	ID           string
+	ID           string `json:"categoryId"`
 	CategoryName string `json:"categoryName"`
 }
 
